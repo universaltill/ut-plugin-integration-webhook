@@ -1,0 +1,45 @@
+{
+  "id": "com.universaltill.integration-webhook",
+  "name": "Webhook / ERP Connector",
+  "version": "1.0.0",
+  "description": "Mirrors every completed sale to any external system by POSTing the sale.completed payload to a configurable endpoint with a configurable auth header. Offline-first: undelivered sales are queued in plugin storage and retried, so the till keeps selling regardless of the ERP. Reference implementation and template for the SAP and Microsoft Dynamics / LS Central connectors (ADR-0014).",
+  "author": "Universal Till",
+  "website": "https://universaltill.com",
+  "canonical_type": "integration",
+  "runtime": "wasm",
+  "device_arch": "any",
+  "min_pos_version": "1.0.0",
+  "permissions": [
+    "events:receive",
+    "net:*",
+    "storage"
+  ],
+  "locales": [
+    "en-US"
+  ],
+  "entries": [],
+  "hooks": [
+    {
+      "event": "sale.completed",
+      "action": "webhook.push"
+    }
+  ],
+  "settings": [
+    {
+      "key": "endpoint_url",
+      "default_value": "",
+      "scope": "global"
+    },
+    {
+      "key": "auth_header",
+      "default_value": "Authorization",
+      "scope": "global"
+    },
+    {
+      "key": "auth_value",
+      "default_value": "",
+      "scope": "global"
+    }
+  ],
+  "entrypoint": "./bin/plugin.wasm"
+}
