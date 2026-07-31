@@ -4,7 +4,7 @@
 # approve step.
 #
 # Environment:
-#   MARKETPLACE_BASE_URL      e.g. https://marketplace.home.taskrunnertech.co.uk
+#   MARKETPLACE_BASE_URL      e.g. https://marketplace.example.com
 #   MARKETPLACE_UPLOAD_TOKEN  bearer token when the marketplace enforces one
 #   MARKETPLACE_LISTING_ID    optional: attach the release to a known listing
 #   MARKETPLACE_CHANNEL       default: stable

@@ -67,5 +67,13 @@ Dynamics/LS Business Central OData) before the POST.
 ## Develop
 
 ```bash
-scripts/build.sh   # GOOS=wasip1 GOARCH=wasm go build → bin/plugin.wasm (prints byte size)
+scripts/build.sh      # GOOS=wasip1 GOARCH=wasm go build → bin/plugin.wasm (prints byte size)
+scripts/validate.sh   # manifest schema + wasm entrypoint checks
+scripts/package.sh    # dist/<id>_<version>_universal.tar.gz + .sha256
+scripts/publish.sh    # upload the packaged artifact to the marketplace
+scripts/approve.sh    # dev-marketplace only: auto-approve + sign the upload
 ```
+
+CI (`.github/workflows/ci.yml`) runs build+validate+package on every push/PR;
+`.github/workflows/release.yml` packages, publishes, and (dev marketplace
+only, `AUTO_APPROVE` repo variable) auto-approves on a `v*` tag push.
