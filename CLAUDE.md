@@ -13,9 +13,11 @@ connectors (ADR-0014).
   `reference/plugin-host-functions.md`). Buffer ABI: data calls return the FULL
   length, retry with a bigger buffer if it exceeds the cap; negatives are
   errors (-1 not found, -2 denied, -3 internal, -4 invalid).
-- Permissions `events:receive`, `net:*`, `storage` are declared in the manifest —
-  keep code and manifest in sync. `net:*` because the target host is unknown
-  until install-time settings (review-gated, ADR-0006).
+- Permissions `events:receive`, `net:*`, `net:@setting:endpoint_url`, `storage`
+  are declared in the manifest — keep code and manifest in sync. `net:*`
+  (public hosts only) because the target host is unknown until install-time
+  settings (review-gated, ADR-0006); `net:@setting:endpoint_url` for a LAN
+  ERP (ut-docs#2899).
 - ERP-specific connectors are clones that override **one seam** — `postSale` in
   `src/main.go` (transform the sale JSON to the target shape) — and keep the
   queue/retry/settings plumbing unchanged.

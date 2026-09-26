@@ -13,10 +13,25 @@ errs = []
 if not re.match(r'^[a-z0-9]+([.-][a-z0-9]+)*$', m.get("id","")): errs.append("bad id")
 if not m.get("name"): errs.append("missing name")
 if not re.match(r'^\d+\.\d+\.\d+', m.get("version","")): errs.append("bad version")
-required_perms = {"events:receive", "net:*", "storage"}
+# net:@setting:endpoint_url (ut-docs#2899): net:* reaches public hosts only
+# since ut-docs#2891; the setting-bound grant lets the connector reach exactly
+# the host in endpoint_url, including an ERP on the shop LAN.
+required_perms = {"events:receive", "net:*", "net:@setting:endpoint_url", "storage"}
 perms = set(m.get("permissions") or [])
 if not perms: errs.append("missing permissions")
 elif not required_perms.issubset(perms): errs.append(f"missing required permissions: {sorted(required_perms - perms)}")
+# Setting-bound grants must name settings this manifest declares (the till
+# refuses the manifest otherwise — internal/plugins/permission_setting.go).
+declared = {s.get("key") for s in m.get("settings") or []}
+for p in perms:
+    if p.startswith("net:@") or p.startswith("tcp:@"):
+        want = 1 if p.startswith("net:@setting:") else 2 if p.startswith("tcp:@setting:") else 0
+        keys = p.split(":@setting:", 1)[1].split(":") if want else []
+        if not want or len(keys) != want or not all(keys):
+            errs.append(f"malformed setting-bound permission {p}")
+        else:
+            missing = [k for k in keys if k not in declared]
+            if missing: errs.append(f"permission {p} names undeclared setting(s) {missing}")
 if not m.get("locales"): errs.append("missing locales")
 if m.get("runtime") != "wasm": errs.append("runtime must be 'wasm' (ADR-0001)")
 else:

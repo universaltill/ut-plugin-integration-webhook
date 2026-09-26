@@ -51,9 +51,18 @@ therefore best-effort and asynchronous from the till's point of view:
 Imported from the `ut` module (see the docs repo
 `reference/plugin-host-functions.md`): `log_write`, `storage_get`,
 `storage_set`, `http_request`, `settings_get`. Requires permissions
-`events:receive`, `net:*` (the target host is unknown until install-time
-settings, so the connector declares the wildcard and is review-gated
-accordingly, ADR-0006) and `storage`.
+`events:receive`, `net:*`, `net:@setting:endpoint_url` and `storage`.
+
+- `net:*` reaches **public** hosts only (the till refuses LAN and loopback
+  addresses under the wildcard since ut-docs#2891); the target host is unknown
+  until install-time settings, so the wildcard is review-gated (ADR-0006).
+- `net:@setting:endpoint_url` (ut-docs#2899) makes the host of the URL
+  currently saved in `endpoint_url` an **exact** grant — so an ERP on the shop
+  network (e.g. `https://192.168.1.20/sales`) is reachable, and no other LAN
+  host is. Change the setting and the grant follows it. Redirects to another
+  LAN host are refused; plain `http://` works only to the till itself
+  (loopback), so a LAN ERP needs `https://`. The till shows this permission as
+  "connects only to the address saved in: endpoint_url".
 
 ## Template for ERP connectors
 
