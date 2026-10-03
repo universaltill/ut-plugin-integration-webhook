@@ -1,3 +1,3 @@
 module github.com/universaltill/ut-plugin-integration-webhook
 
-go 1.22
+go 1.27.1

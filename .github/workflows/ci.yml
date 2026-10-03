@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.23"
+          go-version: "1.27"
       - name: go vet
         # Cross-compiled to match scripts/build.sh's actual GOOS/GOARCH, for
         # parity with the sumup template even though this repo's main.go
