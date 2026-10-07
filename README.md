@@ -51,18 +51,30 @@ therefore best-effort and asynchronous from the till's point of view:
 Imported from the `ut` module (see the docs repo
 `reference/plugin-host-functions.md`): `log_write`, `storage_get`,
 `storage_set`, `http_request`, `settings_get`. Requires permissions
-`events:receive`, `net:*`, `net:@setting:endpoint_url` and `storage`.
+`events:receive`, `net:*`, `net:@setting:endpoint_url`, `http:lan` and
+`storage`.
 
 - `net:*` reaches **public** hosts only (the till refuses LAN and loopback
   addresses under the wildcard since ut-docs#2891); the target host is unknown
   until install-time settings, so the wildcard is review-gated (ADR-0006).
 - `net:@setting:endpoint_url` (ut-docs#2899) makes the host of the URL
-  currently saved in `endpoint_url` an **exact** grant — so an ERP on the shop
-  network (e.g. `https://192.168.1.20/sales`) is reachable, and no other LAN
-  host is. Change the setting and the grant follows it. Redirects to another
-  LAN host are refused; plain `http://` works only to the till itself
-  (loopback), so a LAN ERP needs `https://`. The till shows this permission as
-  "connects only to the address saved in: endpoint_url".
+  currently saved in `endpoint_url` an **exact** grant. Change the setting and
+  the grant follows it. The till shows this permission as "connects only to
+  the address saved in: endpoint_url".
+- `http:lan` (ADR-0121 §3, ut-docs#3794) is what lets that exact grant reach
+  an ERP on the shop network (e.g. `https://192.168.1.20/sales`) at all — the
+  till refuses any LAN address without it — and no other LAN host is
+  reachable. With it, plain `http://` to the configured LAN ERP works too
+  (LAN-only: plain http to a public host is still refused). Redirects to
+  another LAN host are refused. A bridge on the till itself
+  (`http://localhost:…` / `http://127.0.0.1:…`) works with or without
+  `http:lan`. The till's consent screen shows `http:lan` as "Connect to
+  devices on your shop's local network" — here that device is your ERP.
+- **Upgrading from 1.1.0:** a newly declared permission arrives
+  **ungranted**. If your ERP is on the shop network, open the plugin's
+  permissions page after the upgrade and grant `http:lan`. Until you do,
+  every delivery is refused and queued (the queue keeps the newest 200
+  sales). v1.1.0 cannot reach a LAN ERP on a till that enforces this rule.
 
 ## Template for ERP connectors
 
