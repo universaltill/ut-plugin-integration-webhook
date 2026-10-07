@@ -15,8 +15,9 @@ if not m.get("name"): errs.append("missing name")
 if not re.match(r'^\d+\.\d+\.\d+', m.get("version","")): errs.append("bad version")
 # net:@setting:endpoint_url (ut-docs#2899): net:* reaches public hosts only
 # since ut-docs#2891; the setting-bound grant lets the connector reach exactly
-# the host in endpoint_url, including an ERP on the shop LAN.
-required_perms = {"events:receive", "net:*", "net:@setting:endpoint_url", "storage"}
+# the host in endpoint_url; http:lan lets that grant reach an ERP on the shop
+# LAN at all (ADR-0121 §3, ut-docs#3794).
+required_perms = {"events:receive", "net:*", "net:@setting:endpoint_url", "http:lan", "storage"}
 perms = set(m.get("permissions") or [])
 if not perms: errs.append("missing permissions")
 elif not required_perms.issubset(perms): errs.append(f"missing required permissions: {sorted(required_perms - perms)}")
